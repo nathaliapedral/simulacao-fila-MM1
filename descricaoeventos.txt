@@ -1,0 +1,17 @@
+chegada
+	-insere o obj pessoa na collection de pessoas que chegaram ao sistema
+	se fila vazia
+		-programa um evento de chegada na fila de eventos, tempo dependendo da taxa de chegada Poisson
+		-programa um evento de entrada no serviço na fila de eventos, com o mesmo tempo dessa chegada  
+	senao
+		-programa um evento de chegada na fila de eventos, tempo dependendo da taxa de chegada Poisson
+		-insere o índice da pessoa no array de fila de espera
+
+entrada em serviço
+	-programa um evento de saída de serviço, com o tempo dado pela distribuição exponencial do serviço
+	-coleta estatítiscas sobre o tempo de espera na fila
+
+saída de serviço
+	-coleta estatítiscas sobre o tempo de serviço
+	se fila não vazia
+		-programa um evento de entrada em serviço na fila de eventos, com o mesmo tempo da saída de serviço
