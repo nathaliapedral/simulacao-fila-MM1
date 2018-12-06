@@ -13,7 +13,7 @@ class Utils:
     @staticmethod
     def generate_arrival_time():
         #return randint(0, 9)
-        return 0.5
+        return 3
 
     @staticmethod
     def generate_service_time():
