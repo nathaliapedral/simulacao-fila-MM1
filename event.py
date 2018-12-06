@@ -1,7 +1,7 @@
 from customer import *
 from utils import *
 
-busy_server = False  
+busy_server = False
 
 class Event:
 
@@ -21,14 +21,8 @@ class Event:
         self.time = time
         self.customer_index = customer_index
 
-    def queue_starter(self, customers_list, events_list, wait_queue):
-        if (len(wait_queue) == 0 and not busy_server):
-            Utils.append_event(Event('ES', self.time, self.customer_index), events_list)
-        else:
-            wait_queue.append(self.customer_index)
-
     def queue_arrival(self, customers_list, events_list, wait_queue):
-        arrival_time = self.time + Utils.generate_arrival_time()
+        arrival_time = self.time + Utils.generate_arrival_time(0.9)
         customers_list.append(Customer(arrival_time))
         Utils.append_event(Event('CH', arrival_time, len(customers_list) - 1), events_list)
         if (len(wait_queue) == 0 and not busy_server):

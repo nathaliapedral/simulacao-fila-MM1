@@ -12,6 +12,7 @@ class Statistics:
 	#calculo tempo medio de servico 
 	def mean_calculator (self, customer):
 		self.sample_index += 1
+		print 'sample index', self.sample_index
 		self.mean_service_time += (customer.exit_server_time - customer.entry_server_time)
 		self.mean_queue_time += (customer.entry_server_time - customer.arrival_time)
 		self.mean_system_time += (customer.exit_server_time - customer.arrival_time)
