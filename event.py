@@ -21,31 +21,27 @@ class Event:
         self.time = time
         self.customer_index = customer_index
 
-    def queue_arrival(self, customers_list, events_list, wait_queue):   
-        customers_list.append(Customer())
-        Utils.append_event(Event('CH', self.time + Utils.generate_arrival_time(), len(customers_list) - 1), events_list)
-        print "chegamais"
-        print busy_server
+    def queue_arrival(self, customers_list, events_list, wait_queue):
+        arrival_time = self.time + Utils.generate_arrival_time()   
+        customers_list.append(Customer(arrival_time))
+        Utils.append_event(Event('CH', arrival_time, len(customers_list) - 1), events_list)
         if (len(wait_queue) == 0 and not busy_server):
             Utils.append_event(Event('ES', self.time, self.customer_index), events_list)
         else:
             wait_queue.append(self.customer_index)
 
-    def service_entry(self, events_list, wait_queue):
+    def service_entry(self, customers_list, events_list, wait_queue):
         global busy_server
         if (len(wait_queue) > 0):
             wait_queue.pop(0)
         service_time = self.time + Utils.generate_service_time()
-        Utils.append_event(Event('SS',service_time , self.customer_index), events_list)
+        Utils.append_event(Event('SS', service_time , self.customer_index), events_list)
         busy_server = True
-        print "entraS"
-        print busy_server
-        
+        customers_list[self.customer_index].entry_server_time = self.time
 
-    def service_exit(self, events_list, wait_queue):
+    def service_exit(self, customers_list, events_list, wait_queue):
         global busy_server
         if (len(wait_queue) > 0):
             Utils.append_event(Event('ES', self.time, wait_queue[0]), events_list)
         busy_server = False
-        print "saiS"
-        print busy_server
+        customers_list[self.customer_index].exit_server_time = self.time
