@@ -3,32 +3,54 @@ from customer import Customer
 from statistics import Statistics
 from utils import Utils
 import numpy as np
+import scipy.stats as stats
 
 np.random.seed(777)
 events_list = []
 customers_list = []
 wait_queue = []
-statistics = Statistics()
+n_round = 3200
+statistics = []
+k_samples = 3800
+estimated_mean = 0
+estimated_variance = 0
 
-first_customer = Customer(0)
+first_customer = Customer(0, 0, 0)
 customers_list.append(first_customer)
 
 first_arrival = Event('CH', 0, 0)
 events_list.append(first_arrival)
 
-while statistics.sample_index < 90:
-	current_event = events_list.pop(0)
-	#print current_event.time, current_event.event_type, current_event.customer_index
-	if (current_event.event_type == "CH"):		
-		current_event.queue_arrival(customers_list, events_list, wait_queue)
-	elif (current_event.event_type == "ES"):
-		current_event.service_entry(customers_list, events_list, wait_queue)
-	elif (current_event.event_type == "SS"):
-		current_event.service_exit(customers_list, events_list, wait_queue, statistics)
-print "VAMO VE", statistics.sample_index
-print 'media do tempo de servico', statistics.mean_service_time/statistics.sample_index
-print 'media do tempo na fila', statistics.mean_queue_time/statistics.sample_index
-print 'media do tempo de espera no sistema', statistics.mean_system_time/statistics.sample_index 
+
+for current_round in xrange(0, n_round):
+	statistics.append(Statistics())
+	while statistics[current_round].sample_index < k_samples:
+		current_event = events_list.pop(0)
+		#print current_event.time, current_event.event_type, current_event.customer_index
+		if (current_event.event_type == "CH"):		
+			current_event.queue_arrival(customers_list, events_list, wait_queue, current_round)
+		elif (current_event.event_type == "ES"):
+			current_event.service_entry(customers_list, events_list, wait_queue)
+		elif (current_event.event_type == "SS"):
+			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
+	statistics[current_round].mean_calculator()
+
+for x in statistics:
+	estimated_mean += x.mean_queue_wait
+
+estimated_mean_real = estimated_mean / n_round
+
+for x in statistics:
+	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
+
+infe_limit, sup_limit, chi_inf, chi_sup = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_round - 1), n_round)
+mean_infe_limit, mean_sup_limit = mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_round - 1)), estimated_mean_real, n_rounds)
+
+print 'media estimada do tempo de espera na fila',  estimated_mean_real
+print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_round - 1)
+print 'IC bolado', infe_limit, sup_limit   
+print 'Precisao', (chi_inf - chi_sup)/(chi_inf + chi_sup)
+
 
 #for x in events_list:
 	#print x.time, x.event_type, x.customer_index

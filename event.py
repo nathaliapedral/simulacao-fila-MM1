@@ -2,6 +2,7 @@ from customer import *
 from utils import *
 
 busy_server = False
+customer_id = 0
 
 class Event:
 
@@ -21,10 +22,12 @@ class Event:
         self.time = time
         self.customer_index = customer_index
 
-    def queue_arrival(self, customers_list, events_list, wait_queue):
+    def queue_arrival(self, customers_list, events_list, wait_queue, current_round):
+        global customer_id
         arrival_time = self.time + Utils.generate_arrival_time(0.9)
-        customers_list.append(Customer(arrival_time))
-        Utils.append_event(Event('CH', arrival_time, len(customers_list) - 1), events_list)
+        customer_id += 1
+        customers_list.append(Customer(customer_id, arrival_time, current_round))
+        Utils.append_event(Event('CH', arrival_time, customer_id), events_list)
         if (len(wait_queue) == 0 and not busy_server):
             Utils.append_event(Event('ES', self.time, self.customer_index), events_list)
         else:
@@ -37,13 +40,14 @@ class Event:
         service_time = self.time + Utils.generate_service_time()
         Utils.append_event(Event('SS', service_time , self.customer_index), events_list)
         busy_server = True
-        customers_list[self.customer_index].entry_server_time = self.time
+        customers_list[Utils.find_customer(customers_list, self.customer_index)].entry_server_time = self.time
 
-    def service_exit(self, customers_list, events_list, wait_queue, statistics):
+    def service_exit(self, customers_list, events_list, wait_queue, statistics, current_round):
         global busy_server
         if (len(wait_queue) > 0):
             Utils.append_event(Event('ES', self.time, wait_queue[0]), events_list)
         busy_server = False
-        customers_list[self.customer_index].exit_server_time = self.time
-        statistics.mean_calculator(customers_list[self.customer_index])
-
+        aux_customer_id = Utils.find_customer(customers_list, self.customer_index)
+        customers_list[aux_customer_id].exit_server_time = self.time
+        statistics[current_round].statistics_acumulator(customers_list[aux_customer_id])
+        customers_list.pop(aux_customer_id)
