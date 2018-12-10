@@ -5,6 +5,7 @@ from utils import Utils
 import numpy as np
 import scipy.stats as stats
 
+#Variaveis globais
 np.random.seed(777)
 events_list = []
 customers_list = []
@@ -15,6 +16,7 @@ k_samples = 3800
 estimated_mean = 0
 estimated_variance = 0
 
+#Definindo a primeira chegada no sistema
 first_customer = Customer(0, 0, 0)
 customers_list.append(first_customer)
 
@@ -22,6 +24,7 @@ first_arrival = Event('CH', 0, 0)
 events_list.append(first_arrival)
 
 
+#Loop responsavel por rodar a simulacao
 for current_round in xrange(0, n_round):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
@@ -34,6 +37,8 @@ for current_round in xrange(0, n_round):
 		elif (current_event.event_type == "SS"):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
+
+
 
 for x in statistics:
 	estimated_mean += x.mean_queue_wait

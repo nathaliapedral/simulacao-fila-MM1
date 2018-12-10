@@ -6,16 +6,16 @@ customer_id = 0
 
 class Event:
 
-    # Atributos:
-    #
-    # event_type - Define  o tipo do evento 
-    # ---- Chegada (CH) ----
-    # ---- Entrada em servico (ES) ----
-    # ---- Saida de servico (SS) ----
-    #
-    # time - Define o tempo de inicio do evento
-    #
-    # customer_index - Define o indice do individuo a qual o evento se refere
+    '''
+    Atributos de cada Evento:
+    - event_type: Define o tipo do evento 
+        -- Chegada no sistema (CH) 
+        -- Entrada em servico (ES) 
+        -- Saida de servico (SS)
+    
+    - time: Define o tempo de inicio do evento
+    - customer_index: Define o indice do fregues a qual o evento se refere
+    '''
 
     def __init__(self, event_type, time, customer_index): 
         self.event_type = event_type

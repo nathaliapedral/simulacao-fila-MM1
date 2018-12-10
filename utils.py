@@ -31,12 +31,14 @@ class Utils:
                 return x
         return None
 
+    #calculo  do IC usando a distribuicao chi-quadrado
     @staticmethod
     def variance_queue_wait_confidence_interval(estimated_variance, n_rounds):
         superior_limit = ((n_rounds - 1) * estimated_variance) / chi2.ppf(q = 0.025, df = n_rounds-1)
         inferior_limit = ((n_rounds - 1) * estimated_variance) / chi2.ppf(q = 0.975, df = n_rounds-1)
         return inferior_limit , superior_limit, chi2.ppf(q = 0.975, df = n_rounds-1), chi2.ppf(q = 0.025, df = n_rounds-1)
 
+    #calculo do IC usando a distribuicao t-student
     def mean_queue_wait_confidence_interval(standard_deviation, estimated_mean, n_rounds):
         superior_limit = estimated_mean + (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds))) 
         inferior_limit = estimated_mean - (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds)))
