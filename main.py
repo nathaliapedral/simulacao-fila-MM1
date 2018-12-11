@@ -4,15 +4,17 @@ from statistics import Statistics
 from utils import Utils
 import numpy as np
 import scipy.stats as stats
+from math import sqrt
 
 #Variaveis globais
 np.random.seed(777)
 events_list = []
 customers_list = []
 wait_queue = []
-n_round = 3200
+n_rounds = 3200
+n = 1
 statistics = []
-k_samples = 3800
+k_samples = 1000
 estimated_mean = 0
 estimated_variance = 0
 
@@ -25,7 +27,7 @@ events_list.append(first_arrival)
 
 
 #Loop responsavel por rodar a simulacao
-for current_round in xrange(0, n_round):
+for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
 		current_event = events_list.pop(0)
@@ -43,18 +45,23 @@ for current_round in xrange(0, n_round):
 for x in statistics:
 	estimated_mean += x.mean_queue_wait
 
-estimated_mean_real = estimated_mean / n_round
+estimated_mean_real = estimated_mean / n_rounds
 
 for x in statistics:
 	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
 
-infe_limit, sup_limit, chi_inf, chi_sup = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_round - 1), n_round)
-#mean_infe_limit, mean_sup_limit = mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_round - 1)), estimated_mean_real, n_rounds)
+#standard_deviation = estimated_variance / (n_rounds - 1)
+
+infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_rounds - 1), n_rounds)
+mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_rounds - 1)), estimated_mean_real, n_rounds)
 
 print 'media estimada do tempo de espera na fila',  estimated_mean_real
-print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_round - 1)
-print 'IC bolado', infe_limit, sup_limit   
-print 'Precisao', (chi_inf - chi_sup)/(chi_inf + chi_sup)
+print 'IC da media da  t-student: ',mean_infe_limit, mean_sup_limit 
+print 'Precisao da media usando t-student: ', t_precision
+
+print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_rounds - 1)
+print 'IC da variancia bolado: ', infe_limit, sup_limit   
+print 'Precisao da variancia usando chi: ', chi_precision 
 
 
 #for x in events_list:
