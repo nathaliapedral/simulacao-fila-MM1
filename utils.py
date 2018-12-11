@@ -47,7 +47,8 @@ class Utils:
     def mean_queue_wait_confidence_interval(standard_deviation, estimated_mean, n_rounds):
         superior_limit = estimated_mean + (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds))) 
         inferior_limit = estimated_mean - (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds)))
-        precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
+        #precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
+        precision = (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/(estimated_mean * sqrt(n_rounds))))
         return inferior_limit, superior_limit, precision
         
         

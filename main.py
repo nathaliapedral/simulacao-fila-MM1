@@ -11,10 +11,10 @@ np.random.seed(777)
 events_list = []
 customers_list = []
 wait_queue = []
-n_rounds = 3200
+n_rounds = 1
 n = 1
 statistics = []
-k_samples = 1000
+k_samples = 10000
 estimated_mean = 0
 estimated_variance = 0
 
@@ -40,28 +40,34 @@ for current_round in xrange(0, n_rounds):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
 
+sum = 0
+for x in statistics[0].samples_queue_time:
+	sum += (x - statistics[0].mean_queue_wait)**2
 
+estimated_mean_real = statistics[0].mean_queue_wait
+estimated_variance = sum / (k_samples - 1)
 
-for x in statistics:
-	estimated_mean += x.mean_queue_wait
+#for x in statistics:
+#	estimated_mean += x.mean_queue_wait
 
-estimated_mean_real = estimated_mean / n_rounds
+#estimated_mean_real = estimated_mean / n_rounds
 
-for x in statistics:
-	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
+#for x in statistics:
+	#estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
 
 #standard_deviation = estimated_variance / (n_rounds - 1)
 
-infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_rounds - 1), n_rounds)
-mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_rounds - 1)), estimated_mean_real, n_rounds)
+mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance), estimated_mean_real, k_samples)
+#infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_rounds - 1), n_rounds)
 
 print 'media estimada do tempo de espera na fila',  estimated_mean_real
 print 'IC da media da  t-student: ',mean_infe_limit, mean_sup_limit 
 print 'Precisao da media usando t-student: ', t_precision
-
-print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_rounds - 1)
-print 'IC da variancia bolado: ', infe_limit, sup_limit   
-print 'Precisao da variancia usando chi: ', chi_precision 
+print 'conta doida', mean_sup_limit - estimated_mean_real
+print '5 per cent da media', estimated_mean_real * 0.05
+#print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_rounds - 1)
+#print 'IC da variancia bolado: ', infe_limit, sup_limit   
+#print 'Precisao da variancia usando chi: ', chi_precision 
 
 
 #for x in events_list:

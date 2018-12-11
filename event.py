@@ -24,7 +24,7 @@ class Event:
 
     def queue_arrival(self, customers_list, events_list, wait_queue, current_round):
         global customer_id
-        arrival_time = self.time + Utils.generate_arrival_time(0.9)
+        arrival_time = self.time + Utils.generate_arrival_time(0.2)
         customer_id += 1
         customers_list.append(Customer(customer_id, arrival_time, current_round))
         Utils.append_event(Event('CH', arrival_time, customer_id), events_list)
