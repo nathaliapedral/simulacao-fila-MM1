@@ -12,11 +12,11 @@ events_list = []
 customers_list = []
 wait_queue = []
 n_rounds = 3200
-n = 1
 statistics = []
 k_samples = 1000
 estimated_mean = 0
 estimated_variance = 0
+n = k_samples
 
 #Definindo a primeira chegada no sistema
 first_customer = Customer(0, 0, 0)
@@ -39,27 +39,32 @@ for current_round in xrange(0, n_rounds):
 		elif (current_event.event_type == "SS"):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
-
-
+	statistics[current_round].variance_calculator()
 
 for x in statistics:
 	estimated_mean += x.mean_queue_wait
+	estimated_variance += x.variance_queue_wait
 
-estimated_mean_real = estimated_mean / n_rounds
+estimated_mean_real = estimated_mean/n_rounds
+estimated_mean_variance = estimated_variance/n_rounds
 
 for x in statistics:
-	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
+	print 'media', x.mean_queue_wait
+	# print 'estima', estimated_mean_real
+	print 'Estima', round_mean_wait_time
+	estimated_variance += (x.mean_queue_wait - round_mean_wait_time)**2
 
-#standard_deviation = estimated_variance / (n_rounds - 1)
+#estimated_variance = estimated_variance/(n_rounds - 1)
+#standard_deviation = sqrt(estimated_variance)
 
-infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_rounds - 1), n_rounds)
-mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_rounds - 1)), estimated_mean_real, n_rounds)
+infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance, n_rounds)
+mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(standard_deviation, round_mean_wait_time, n_rounds)
 
 print 'media estimada do tempo de espera na fila',  estimated_mean_real
 print 'IC da media da  t-student: ',mean_infe_limit, mean_sup_limit 
 print 'Precisao da media usando t-student: ', t_precision
-
-print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_rounds - 1)
+print ''
+print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n - 1)
 print 'IC da variancia bolado: ', infe_limit, sup_limit   
 print 'Precisao da variancia usando chi: ', chi_precision 
 
