@@ -1,7 +1,7 @@
 class Customer:
 
 	'''
-	Atributos do freguês: 
+	Atributos do fregues: 
 	 - id 
 	 - arrival_time: tempo de chegada no sistema
 	 - entry_server_time: tempo de entrada em servico

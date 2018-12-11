@@ -49,7 +49,7 @@ for x in statistics:
 	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
 
 infe_limit, sup_limit, chi_inf, chi_sup = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_round - 1), n_round)
-mean_infe_limit, mean_sup_limit = mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_round - 1)), estimated_mean_real, n_rounds)
+#mean_infe_limit, mean_sup_limit = mean_queue_wait_confidence_interval(sqrt(estimated_variance / (n_round - 1)), estimated_mean_real, n_rounds)
 
 print 'media estimada do tempo de espera na fila',  estimated_mean_real
 print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_round - 1)
