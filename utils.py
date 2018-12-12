@@ -2,6 +2,7 @@ import numpy as np
 from scipy.stats import chi2
 from scipy.stats import t
 from math import sqrt
+import matplotlib.pyplot as plt
 
 class Utils:
 	
@@ -50,5 +51,14 @@ class Utils:
         #precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
         precision = (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/(estimated_mean * sqrt(n_rounds))))
         return inferior_limit, superior_limit, precision
+
+
+    @staticmethod
+    def generate_mean_graphic(x_data):
+        plt.plot(x_data)
+        plt.title("Grafico da media")
+        plt.xlabel("k coletas")
+        plt.ylabel('media das coletas')
+        plt.show()
         
         

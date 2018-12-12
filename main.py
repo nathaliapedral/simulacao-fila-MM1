@@ -11,10 +11,10 @@ np.random.seed(777)
 events_list = []
 customers_list = []
 wait_queue = []
-n_rounds = 3200
+n_rounds = 1
 n = 1
 statistics = []
-k_samples = 500
+k_samples = 500000
 estimated_mean = 0
 estimated_variance = 0
 
@@ -24,7 +24,6 @@ customers_list.append(first_customer)
 
 first_arrival = Event('CH', 0, 0)
 events_list.append(first_arrival)
-
 
 #Loop responsavel por rodar a simulacao
 for current_round in xrange(0, n_rounds):
@@ -40,6 +39,8 @@ for current_round in xrange(0, n_rounds):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
 
+Utils.generate_mean_graphic(statistics[0].incremental_mean)
+
 '''sum = 0
 for x in statistics[0].samples_queue_time:
 	sum += (x - statistics[0].mean_queue_wait)**2
@@ -47,7 +48,7 @@ for x in statistics[0].samples_queue_time:
 estimated_mean_real = statistics[0].mean_queue_wait
 estimated_variance = sum / (k_samples - 1)
 '''
-
+'''
 for x in statistics:
 	estimated_mean += x.mean_queue_wait
 
@@ -79,7 +80,7 @@ print 'Precisao da variancia usando chi: ', chi_precision
 print 'Tamanho do IC usando os limites', sup_limit - infe_limit
 #print 'Tamanho do IC da variancia', tam_ic_mean
 print '10 per cent da media', estimated_variance_real * 0.1
-
+'''
 #for x in events_list:
 	#print x.time, x.event_type, x.customer_index
 #print ''
