@@ -6,17 +6,17 @@ import numpy as np
 import scipy.stats as stats
 from math import sqrt
 
-#Variaveis globais
-np.random.seed(777)
+np.random.seed(42)
 events_list = []
 customers_list = []
 wait_queue = []
-n_rounds = 1
+n_rounds = 3200
 n = 1
 statistics = []
-k_samples = 500000
+k_samples = 10
 estimated_mean = 0
 estimated_variance = 0
+estimated_covariance = 0
 
 #Definindo a primeira chegada no sistema
 first_customer = Customer(0, 0, 0)
@@ -38,8 +38,40 @@ for current_round in xrange(0, n_rounds):
 		elif (current_event.event_type == "SS"):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
+	
+	estimated_mean_acumulator = 0
+	for x in statistics:
+		estimated_mean_acumulator += x.mean_queue_wait
 
-Utils.generate_mean_graphic(statistics[0].incremental_mean)
+	estimated_mean = estimated_mean_acumulator / len(statistics)
+	#print 'media estimada', estimated_mean
+
+	if len(statistics) > 1:
+		estimated_variance_acumulator = 0
+		for x in statistics:
+			estimated_variance_acumulator += (x.mean_queue_wait - estimated_mean)**2
+		estimated_variance = estimated_variance_acumulator / (len(statistics) - 1)
+		#print 'variancia estimada', estimated_variance
+
+	if len(statistics) > 2:
+		estimated_covariance_acumulator = 0
+		for x in xrange(0, len(statistics)-1):
+			estimated_covariance_acumulator += (statistics[x].mean_queue_wait - estimated_mean) * (statistics[x+1].mean_queue_wait - estimated_mean)
+		estimated_covariance = estimated_variance_acumulator / (len(statistics) - 2)
+		#print 'covariancia estimada', estimated_covariance
+		print 'k', k_samples
+		print 'sub', (estimated_covariance / estimated_variance)
+		if ((estimated_covariance / estimated_variance)-1 <= 0.1):
+			print 'k', k_samples
+			break
+		k_samples = k_samples * 2
+	
+	
+		
+
+#Utils.generate_mean_graphic(statistics[0].incremental_mean)
+
+
 
 '''sum = 0
 for x in statistics[0].samples_queue_time:
@@ -48,17 +80,23 @@ for x in statistics[0].samples_queue_time:
 estimated_mean_real = statistics[0].mean_queue_wait
 estimated_variance = sum / (k_samples - 1)
 '''
+
+'''for x in statistics:
+	estimated_mean_acumulator += x.mean_queue_wait
+
+estimated_mean_real = estimated_mean_acumulator / n_rounds
+
+for x in statistics:
+	estimated_variance_acumulator += (x.mean_queue_wait - estimated_mean_real)**2
+
+estimated_variance = estimated_variance_acumulator / (n_rounds - 1) 
+
+
+
+print 'media da FCFS', estimated_mean_real
+print 'variancia da FCFS', estimated_variance_real
 '''
-for x in statistics:
-	estimated_mean += x.mean_queue_wait
-
-estimated_mean_real = estimated_mean / n_rounds
-
-for x in statistics:
-	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
-
-estimated_variance_real = estimated_variance / (n_rounds - 1) 
-
+'''
 standard_deviation = sqrt(estimated_variance_real)
 
 mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(standard_deviation, estimated_mean_real, n_rounds)

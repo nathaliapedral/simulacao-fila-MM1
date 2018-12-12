@@ -2,6 +2,8 @@ import numpy as np
 from scipy.stats import chi2
 from scipy.stats import t
 from math import sqrt
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 class Utils:
@@ -60,5 +62,4 @@ class Utils:
         plt.xlabel("k coletas")
         plt.ylabel('media das coletas')
         plt.show()
-        
         

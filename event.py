@@ -1,8 +1,10 @@
 from customer import *
 from utils import *
+import sys
 
 busy_server = False
 customer_id = 0
+discipline = sys.argv[1] if len(sys.argv) > 1 else 'FCFS' 
 
 class Event:
 
@@ -24,7 +26,7 @@ class Event:
 
     def queue_arrival(self, customers_list, events_list, wait_queue, current_round):
         global customer_id
-        arrival_time = self.time + Utils.generate_arrival_time(0.9)
+        arrival_time = self.time + Utils.generate_arrival_time(0.4)
         customer_id += 1
         customers_list.append(Customer(customer_id, arrival_time, current_round))
         Utils.append_event(Event('CH', arrival_time, customer_id), events_list)
@@ -36,7 +38,8 @@ class Event:
     def service_entry(self, customers_list, events_list, wait_queue):
         global busy_server
         if (len(wait_queue) > 0):
-            wait_queue.pop(0)
+            next_in_queue = 0 if discipline == 'FCFS' else len(wait_queue)-1
+            wait_queue.pop(next_in_queue)
         service_time = self.time + Utils.generate_service_time()
         Utils.append_event(Event('SS', service_time , self.customer_index), events_list)
         busy_server = True
@@ -45,7 +48,8 @@ class Event:
     def service_exit(self, customers_list, events_list, wait_queue, statistics, current_round):
         global busy_server
         if (len(wait_queue) > 0):
-            Utils.append_event(Event('ES', self.time, wait_queue[0]), events_list)
+            next_in_queue = 0 if discipline == 'FCFS' else len(wait_queue)-1
+            Utils.append_event(Event('ES', self.time, wait_queue[next_in_queue]), events_list)
         busy_server = False
         aux_customer_id = Utils.find_customer(customers_list, self.customer_index)
         customers_list[aux_customer_id].exit_server_time = self.time
