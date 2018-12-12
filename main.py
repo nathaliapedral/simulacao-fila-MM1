@@ -11,10 +11,10 @@ np.random.seed(777)
 events_list = []
 customers_list = []
 wait_queue = []
-n_rounds = 1
+n_rounds = 3200
 n = 1
 statistics = []
-k_samples = 10000
+k_samples = 500
 estimated_mean = 0
 estimated_variance = 0
 
@@ -40,35 +40,45 @@ for current_round in xrange(0, n_rounds):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
 
-sum = 0
+'''sum = 0
 for x in statistics[0].samples_queue_time:
 	sum += (x - statistics[0].mean_queue_wait)**2
 
 estimated_mean_real = statistics[0].mean_queue_wait
 estimated_variance = sum / (k_samples - 1)
+'''
 
-#for x in statistics:
-#	estimated_mean += x.mean_queue_wait
+for x in statistics:
+	estimated_mean += x.mean_queue_wait
 
-#estimated_mean_real = estimated_mean / n_rounds
+estimated_mean_real = estimated_mean / n_rounds
 
-#for x in statistics:
-	#estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
+for x in statistics:
+	estimated_variance += (x.mean_queue_wait - estimated_mean_real)**2
 
-#standard_deviation = estimated_variance / (n_rounds - 1)
+estimated_variance_real = estimated_variance / (n_rounds - 1) 
 
-mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance), estimated_mean_real, k_samples)
-#infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance / (n_rounds - 1), n_rounds)
+standard_deviation = sqrt(estimated_variance_real)
 
+mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(standard_deviation, estimated_mean_real, n_rounds)
+infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance_real, n_rounds, k_samples)
+
+tam_ic_mean = (2*1.96*standard_deviation) / sqrt(n_rounds)
+
+#print 'desvio padrao', standard_deviation
 print 'media estimada do tempo de espera na fila',  estimated_mean_real
 print 'IC da media da  t-student: ',mean_infe_limit, mean_sup_limit 
 print 'Precisao da media usando t-student: ', t_precision
-print 'conta doida', mean_sup_limit - estimated_mean_real
-print '5 per cent da media', estimated_mean_real * 0.05
-#print 'variancia estimada do tempo de espera na fila',  estimated_variance / (n_rounds - 1)
-#print 'IC da variancia bolado: ', infe_limit, sup_limit   
-#print 'Precisao da variancia usando chi: ', chi_precision 
-
+print 'Tamanho do IC usando os limites', mean_sup_limit - mean_infe_limit
+print 'Tamanho do IC da media', tam_ic_mean
+print '10 per cent da media', estimated_mean_real * 0.1
+print '============='
+print 'variancia estimada do tempo de espera na fila',  k_samples * estimated_variance_real
+print 'IC da variancia bolado: ', infe_limit, sup_limit   
+print 'Precisao da variancia usando chi: ', chi_precision 
+print 'Tamanho do IC usando os limites', sup_limit - infe_limit
+#print 'Tamanho do IC da variancia', tam_ic_mean
+print '10 per cent da media', estimated_variance_real * 0.1
 
 #for x in events_list:
 	#print x.time, x.event_type, x.customer_index
