@@ -40,7 +40,6 @@ for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
 		current_event = events_list.pop(0)
-		#print current_event.time, current_event.event_type, current_event.customer_index
 		if (current_event.event_type == "CH"):		
 			current_event.queue_arrival(customers_list, events_list, wait_queue, current_round)
 		elif (current_event.event_type == "ES"):
@@ -59,18 +58,13 @@ for current_round in xrange(0, n_rounds):
 		for x in statistics:
 			estimated_variance_acumulator += (x.mean_queue_wait - estimated_mean)**2
 		estimated_variance = estimated_variance_acumulator / (len(statistics) - 1)
-		#print 'variancia estimada', estimated_variance
 
 	if len(statistics) > 2:
 		estimated_covariance_acumulator = 0
 		for x in xrange(0, len(statistics)-1):
 			estimated_covariance_acumulator += (statistics[x].mean_queue_wait - estimated_mean) * (statistics[x+1].mean_queue_wait - estimated_mean)
 		estimated_covariance = estimated_variance_acumulator / (len(statistics) - 2)
-		print 'k atual: ', k_samples
-		print 'Relacao da covariancia com a variancia: ', (estimated_covariance / estimated_variance)
 		if ((estimated_covariance / estimated_variance)-1 <= 0.1):
-			print ''
-			print 'Final da fase transiente k = ', k_samples
 			break
 		k_samples = k_samples * 2
 
@@ -80,7 +74,6 @@ for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
 		current_event = events_list.pop(0)
-		#print current_event.time, current_event.event_type, current_event.customer_index
 		if (current_event.event_type == "CH"):		
 			current_event.queue_arrival(customers_list, events_list, wait_queue, current_round)
 		elif (current_event.event_type == "ES"):
@@ -93,7 +86,6 @@ for current_round in xrange(0, n_rounds):
 		
 
 #Utils.generate_mean_graphic(statistics[0].incremental_mean)
-
 
 
 '''sum = 0
