@@ -23,7 +23,7 @@ class Statistics:
 		self.sample_service_time += (customer.exit_server_time - customer.entry_server_time)
 		self.sample_queue_time += (customer.entry_server_time - customer.arrival_time)
 		self.sample_system_time += (customer.exit_server_time - customer.arrival_time)
-		self.nq_acumulator += (len(wait_queue)-1) * (customer.exit_server_time - self.last_exit_time)
+		self.nq_acumulator += (len(wait_queue)-1) * (customer.exit_server_time - self.last_exit_time) if len(wait_queue) > 1 else 0
 		self.last_exit_time = customer.exit_server_time
 	
 	#Metodo responsavel pelo calculo da media do tempo de espera na fila

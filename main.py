@@ -71,6 +71,7 @@ for current_round in xrange(0, n_rounds):
 
 #Loop responsavel por rodar a simulacao
 statistics = []
+k_samples += 1000
 for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
