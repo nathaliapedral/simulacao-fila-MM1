@@ -5,6 +5,7 @@ from utils import Utils
 import numpy as np
 import scipy.stats as stats
 from math import sqrt
+import sys
 
 np.random.seed(42)
 events_list = []
@@ -13,10 +14,14 @@ wait_queue = []
 n_rounds = 3200
 n = 1
 statistics = []
-k_samples = 10
+k_samples = 1
 estimated_mean = 0
 estimated_variance = 0
 estimated_covariance = 0
+
+discipline = sys.argv[1] if len(sys.argv) > 1 else 'FCFS'
+rho = sys.argv[2] if len(sys.argv) > 2 else '0.9' 
+
 
 #Definindo a primeira chegada no sistema
 first_customer = Customer(0, 0, 0)
@@ -25,7 +30,12 @@ customers_list.append(first_customer)
 first_arrival = Event('CH', 0, 0)
 events_list.append(first_arrival)
 
-#Loop responsavel por rodar a simulacao
+print ''
+print 'Rho utilizado:', rho
+print 'Disciplina de atendimento:', discipline
+print ''
+
+#Loop responsavel por rodar a fase transiente
 for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
@@ -42,9 +52,7 @@ for current_round in xrange(0, n_rounds):
 	estimated_mean_acumulator = 0
 	for x in statistics:
 		estimated_mean_acumulator += x.mean_queue_wait
-
 	estimated_mean = estimated_mean_acumulator / len(statistics)
-	#print 'media estimada', estimated_mean
 
 	if len(statistics) > 1:
 		estimated_variance_acumulator = 0
@@ -58,13 +66,28 @@ for current_round in xrange(0, n_rounds):
 		for x in xrange(0, len(statistics)-1):
 			estimated_covariance_acumulator += (statistics[x].mean_queue_wait - estimated_mean) * (statistics[x+1].mean_queue_wait - estimated_mean)
 		estimated_covariance = estimated_variance_acumulator / (len(statistics) - 2)
-		#print 'covariancia estimada', estimated_covariance
-		print 'k', k_samples
-		print 'sub', (estimated_covariance / estimated_variance)
+		print 'k atual: ', k_samples
+		print 'Relacao da covariancia com a variancia: ', (estimated_covariance / estimated_variance)
 		if ((estimated_covariance / estimated_variance)-1 <= 0.1):
-			print 'k', k_samples
+			print ''
+			print 'Final da fase transiente k = ', k_samples
 			break
 		k_samples = k_samples * 2
+
+#Loop responsavel por rodar a simulacao
+statistics = []
+for current_round in xrange(0, n_rounds):
+	statistics.append(Statistics())
+	while statistics[current_round].sample_index < k_samples:
+		current_event = events_list.pop(0)
+		#print current_event.time, current_event.event_type, current_event.customer_index
+		if (current_event.event_type == "CH"):		
+			current_event.queue_arrival(customers_list, events_list, wait_queue, current_round)
+		elif (current_event.event_type == "ES"):
+			current_event.service_entry(customers_list, events_list, wait_queue)
+		elif (current_event.event_type == "SS"):
+			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
+	statistics[current_round].mean_calculator()
 	
 	
 		
