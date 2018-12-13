@@ -19,6 +19,7 @@ estimated_mean = 0
 estimated_variance = 0
 estimated_covariance = 0
 
+
 discipline = sys.argv[1] if len(sys.argv) > 1 else 'FCFS'
 rho = sys.argv[2] if len(sys.argv) > 2 else '0.9' 
 
@@ -81,11 +82,28 @@ for current_round in xrange(0, n_rounds):
 		elif (current_event.event_type == "SS"):
 			current_event.service_exit(customers_list, events_list, wait_queue, statistics, current_round)
 	statistics[current_round].mean_calculator()
+	statistics[current_round].nq_calculator()
 	
-	
-		
+estimated_nq_acumulator = 0
 
-#Utils.generate_mean_graphic(statistics[0].incremental_mean)
+for x in statistics:
+	estimated_nq_acumulator += x.mean_nq
+
+estimated_nq_real = estimated_nq_acumulator / n_rounds		
+
+print 'Nq medio:', estimated_nq_real
+
+estimated_variance_nq_acumulator = 0
+for x in statistics:
+	estimated_variance_nq_acumulator += (x.mean_nq - estimated_nq_real)**2
+
+estimated_variance_nq = estimated_variance_nq_acumulator / (n_rounds - 1) 
+print 'Variancia Nq:',estimated_variance_nq
+
+inf_nq, sup_nq, precision_nq = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance_nq), estimated_nq_real, n_rounds)
+
+print 'IC nq:', inf_nq, sup_nq
+print 'precisao nq:', precision_nq
 
 
 '''sum = 0
@@ -95,12 +113,20 @@ for x in statistics[0].samples_queue_time:
 estimated_mean_real = statistics[0].mean_queue_wait
 estimated_variance = sum / (k_samples - 1)
 '''
-
-'''for x in statistics:
+estimated_mean_acumulator = 0
+for x in statistics:
 	estimated_mean_acumulator += x.mean_queue_wait
 
 estimated_mean_real = estimated_mean_acumulator / n_rounds
+print 'Media W:',estimated_mean_real
+print 'rho:',estimated_nq_real / estimated_mean_real
 
+inf_var_nq, sup_var_nq, precision_var_nq = Utils.variance_queue_wait_confidence_interval(estimated_variance_nq, n_rounds, 1)
+
+print 'IC Variancia nq:', inf_var_nq, sup_var_nq
+print 'precisao variancia nq:', precision_var_nq
+
+'''
 for x in statistics:
 	estimated_variance_acumulator += (x.mean_queue_wait - estimated_mean_real)**2
 

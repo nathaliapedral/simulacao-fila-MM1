@@ -54,5 +54,5 @@ class Event:
         busy_server = False
         aux_customer_id = Utils.find_customer(customers_list, self.customer_index)
         customers_list[aux_customer_id].exit_server_time = self.time
-        statistics[current_round].statistics_acumulator(customers_list[aux_customer_id])
+        statistics[current_round].statistics_acumulator(customers_list[aux_customer_id], wait_queue)
         customers_list.pop(aux_customer_id)
