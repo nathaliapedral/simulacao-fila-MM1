@@ -7,19 +7,20 @@ import scipy.stats as stats
 from math import sqrt
 import sys
 
-np.random.seed(42)
+np.random.seed(42) #Semente inicial
+
+#Variaveis globais
 events_list = []
 customers_list = []
 wait_queue = []
 n_rounds = 3200
-n = 1
 statistics = []
 k_samples = 1
 estimated_mean = 0
 estimated_variance = 0
 estimated_covariance = 0
 
-
+#Passando a disciplina e rho por argumentos
 discipline = sys.argv[1] if len(sys.argv) > 1 else 'FCFS'
 rho = sys.argv[2] if len(sys.argv) > 2 else '0.9' 
 
@@ -85,8 +86,8 @@ for current_round in xrange(0, n_rounds):
 	statistics[current_round].mean_calculator()
 	statistics[current_round].nq_calculator()
 	
+#============================Calculo da média, variancia e IC de Nq==================================
 estimated_nq_acumulator = 0
-
 for x in statistics:
 	estimated_nq_acumulator += x.mean_nq
 
@@ -103,20 +104,19 @@ print 'Variancia Nq:',estimated_variance_nq
 
 inf_nq, sup_nq, precision_nq = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance_nq), estimated_nq_real, n_rounds)
 
-print 'IC nq:', inf_nq, sup_nq
-print 'precisao nq:', precision_nq
+print 'IC media nq:', inf_nq, sup_nq
+print 'precisao media nq:', precision_nq
 
-
-
-
-#print 'rho:',estimated_nq_real / estimated_mean_real
 
 inf_var_nq, sup_var_nq, precision_var_nq = Utils.variance_queue_wait_confidence_interval(estimated_variance_nq, n_rounds, 1)
 
 print 'IC Variancia nq:', inf_var_nq, sup_var_nq
 print 'precisao variancia nq:', precision_var_nq
-print ''
-print ''
+
+#===================================================================================================
+
+
+#============================Calculo da média, variancia e IC de W==================================
 estimated_mean_acumulator = 0
 for x in statistics:
 	estimated_mean_acumulator += x.mean_queue_wait
@@ -134,61 +134,10 @@ print 'Variancia W:',estimated_variance_w
 
 inf_w, sup_w, precision_w = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance_w), estimated_mean_real, n_rounds)
 print 'IC da media de W: ',inf_w, sup_w, precision_w
+print 'precisao IC da media de W:', precision_w
 
 inf_var_w, sup_var_w, precision_var_w = Utils.variance_queue_wait_confidence_interval(estimated_variance_w, n_rounds, 1)
 print 'IC da variancia de W: ',inf_var_w, sup_var_w, precision_var_w
+print 'precisao IC da media de W:', precision_var_w
 
-
-'''
-for x in statistics:
-	estimated_variance_acumulator += (x.mean_queue_wait - estimated_mean_real)**2
-
-estimated_variance = estimated_variance_acumulator / (n_rounds - 1) 
-
-
-
-print 'media da FCFS', estimated_mean_real
-print 'variancia da FCFS', estimated_variance_real
-'''
-'''
-standard_deviation = sqrt(estimated_variance_real)
-
-mean_infe_limit, mean_sup_limit, t_precision = Utils.mean_queue_wait_confidence_interval(standard_deviation, estimated_mean_real, n_rounds)
-infe_limit, sup_limit, chi_precision = Utils.variance_queue_wait_confidence_interval(estimated_variance_real, n_rounds, k_samples)
-
-tam_ic_mean = (2*1.96*standard_deviation) / sqrt(n_rounds)
-
-#print 'desvio padrao', standard_deviation
-print 'media estimada do tempo de espera na fila',  estimated_mean_real
-print 'IC da media da  t-student: ',mean_infe_limit, mean_sup_limit 
-print 'Precisao da media usando t-student: ', t_precision
-print 'Tamanho do IC usando os limites', mean_sup_limit - mean_infe_limit
-print 'Tamanho do IC da media', tam_ic_mean
-print '10 per cent da media', estimated_mean_real * 0.1
-print '============='
-print 'variancia estimada do tempo de espera na fila',  k_samples * estimated_variance_real
-print 'IC da variancia bolado: ', infe_limit, sup_limit   
-print 'Precisao da variancia usando chi: ', chi_precision 
-print 'Tamanho do IC usando os limites', sup_limit - infe_limit
-#print 'Tamanho do IC da variancia', tam_ic_mean
-print '10 per cent da media', estimated_variance_real * 0.1
-'''
-#for x in events_list:
-	#print x.time, x.event_type, x.customer_index
-#print ''
-#print '=================================================================='
-#print ''
-
-#for x in customers_list:
-#	print 'Customer ',customers_list.index(x),':'
-#	print 'Chegou no tempo ', x.arrival_time,'s'
-#	print 'Entrou em servico no tempo ' , x.entry_server_time,'s'
-#	print 'Saiu de servico no tempo ', x.exit_server_time,'s'
-#	print 'Tempo em servico: ', x.exit_server_time - x.entry_server_time,'s'
-#	print 'Tempo na fila de espera: ', x.entry_server_time - x.arrival_time,'s'
-#	print 'Tempo total no sistema: ',x.exit_server_time - x.arrival_time,'s'
-#	print '-------------\\-------------\\-------------\\-------------\\-----'
-
-#mean_service_time = Statistics()
-
-#print 'Teste tempo medio de servico: ', mean_service_time.mean_service_time(customers_list)
+#====================================================================================================

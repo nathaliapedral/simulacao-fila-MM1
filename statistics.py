@@ -17,6 +17,7 @@ class Statistics:
 	- tempo de servico
 	- tempo de espera na fila 
 	- tempo total gasto no sistema
+	- numero de pessoas na fila de espera
 	'''
 	def statistics_acumulator (self, customer, wait_queue):
 		self.sample_index += 1
@@ -24,11 +25,12 @@ class Statistics:
 		self.sample_queue_time += (customer.entry_server_time - customer.arrival_time)
 		self.sample_system_time += (customer.exit_server_time - customer.arrival_time)
 		self.nq_acumulator += (len(wait_queue)-1) * (customer.exit_server_time - self.last_exit_time) if len(wait_queue) > 1 else 0
-		self.last_exit_time = customer.exit_server_time
+		self.last_exit_time = customer.exit_server_time #Atualiza o ultimo tempo de saida
 	
 	#Metodo responsavel pelo calculo da media do tempo de espera na fila
 	def  mean_calculator(self):
 		self.mean_queue_wait = self.sample_queue_time / self.sample_index
 
+	#Metodo responsavel pelo calculo da media no numero de pessoa na fila de espera
 	def nq_calculator(self):
 		self.mean_nq = self.nq_acumulator / self.last_exit_time 

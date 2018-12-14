@@ -2,9 +2,6 @@ import numpy as np
 from scipy.stats import chi2
 from scipy.stats import t
 from math import sqrt
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
 class Utils:
 	
@@ -16,12 +13,14 @@ class Utils:
                 return
         events_list.append(event)
 
+    #Geracao do intervalo do tempo entre chegadas
     @staticmethod
     def generate_arrival_time(lambda_):
         u0 = np.random.rand()
         t0 = np.log(u0) / (-lambda_)
         return t0
 
+    #Geracao do intervalo do tempo de servico  
     @staticmethod
     def generate_service_time():  
         u0 = np.random.rand()
@@ -37,9 +36,9 @@ class Utils:
 
     #calculo  do IC usando a distribuicao chi-quadrado
     @staticmethod
-    def variance_queue_wait_confidence_interval(estimated_variance, n_rounds, k_samples):
-        superior_limit = ((k_samples * (n_rounds - 1)) * estimated_variance) / chi2.ppf(q = 0.025, df = n_rounds-1)
-        inferior_limit = ((k_samples * (n_rounds - 1)) * estimated_variance) / chi2.ppf(q = 0.975, df = n_rounds-1)
+    def variance_queue_wait_confidence_interval(estimated_variance, n_rounds):
+        superior_limit = ((n_rounds - 1) * estimated_variance) / chi2.ppf(q = 0.025, df = n_rounds-1)
+        inferior_limit = ((n_rounds - 1) * estimated_variance) / chi2.ppf(q = 0.975, df = n_rounds-1)
         chi_sup = chi2.ppf(q = 0.025, df = n_rounds-1)
         chi_inf =  chi2.ppf(q = 0.975, df = n_rounds-1)
         precision = (chi_inf - chi_sup)/(chi_inf + chi_sup)
@@ -50,16 +49,7 @@ class Utils:
     def mean_queue_wait_confidence_interval(standard_deviation, estimated_mean, n_rounds):
         superior_limit = estimated_mean + (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds))) 
         inferior_limit = estimated_mean - (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds)))
-        #precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
-        precision = (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/(estimated_mean * sqrt(n_rounds))))
+        precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
         return inferior_limit, superior_limit, precision
-
-
-    @staticmethod
-    def generate_mean_graphic(x_data):
-        plt.plot(x_data)
-        plt.title("Grafico da media")
-        plt.xlabel("k coletas")
-        plt.ylabel('media das coletas')
-        plt.show()
+        
         
