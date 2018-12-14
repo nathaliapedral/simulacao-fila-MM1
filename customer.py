@@ -15,6 +15,3 @@ class Customer:
 		self.arrival_round = arrival_round
 		self.entry_server_time = 0
 		self.exit_server_time = 0
-
-
-	
