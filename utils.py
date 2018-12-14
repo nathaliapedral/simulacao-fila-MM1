@@ -2,8 +2,8 @@ import numpy as np
 from scipy.stats import chi2
 from scipy.stats import t
 from math import sqrt
-import matplotlib
-matplotlib.use('Agg')
+#import matplotlib
+#matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 class Utils:
@@ -50,16 +50,14 @@ class Utils:
     def mean_queue_wait_confidence_interval(standard_deviation, estimated_mean, n_rounds):
         superior_limit = estimated_mean + (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds))) 
         inferior_limit = estimated_mean - (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/sqrt(n_rounds)))
-        #precision = (superior_limit - inferior_limit) / (superior_limit + inferior_limit)
         precision = (t.ppf(q = 0.975, df = n_rounds-1) * (standard_deviation/(estimated_mean * sqrt(n_rounds))))
         return inferior_limit, superior_limit, precision
 
 
     @staticmethod
-    def generate_mean_graphic(x_data):
-        plt.plot(x_data)
-        plt.title("Grafico da media")
-        plt.xlabel("k coletas")
-        plt.ylabel('media das coletas')
+    def generate_mean_graphic(x_data, y_data, yerror):
+        plt.figure()
+        plt.errorbar(x_data, y_data, yerr=yerror, errorevery=100)
+        plt.title("IC para a media do tempo de espera na fila")
+
         plt.show()
-        
