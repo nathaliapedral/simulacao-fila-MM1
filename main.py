@@ -71,7 +71,7 @@ for current_round in xrange(0, n_rounds):
 
 #Loop responsavel por rodar a simulacao
 statistics = []
-k_samples += 1000
+k_samples = 100
 for current_round in xrange(0, n_rounds):
 	statistics.append(Statistics())
 	while statistics[current_round].sample_index < k_samples:
@@ -107,25 +107,37 @@ print 'IC nq:', inf_nq, sup_nq
 print 'precisao nq:', precision_nq
 
 
-'''sum = 0
-for x in statistics[0].samples_queue_time:
-	sum += (x - statistics[0].mean_queue_wait)**2
 
-estimated_mean_real = statistics[0].mean_queue_wait
-estimated_variance = sum / (k_samples - 1)
-'''
+
+#print 'rho:',estimated_nq_real / estimated_mean_real
+
+inf_var_nq, sup_var_nq, precision_var_nq = Utils.variance_queue_wait_confidence_interval(estimated_variance_nq, n_rounds, 1)
+
+print 'IC Variancia nq:', inf_var_nq, sup_var_nq
+print 'precisao variancia nq:', precision_var_nq
+print ''
+print ''
 estimated_mean_acumulator = 0
 for x in statistics:
 	estimated_mean_acumulator += x.mean_queue_wait
 
 estimated_mean_real = estimated_mean_acumulator / n_rounds
 print 'Media W:',estimated_mean_real
-print 'rho:',estimated_nq_real / estimated_mean_real
 
-inf_var_nq, sup_var_nq, precision_var_nq = Utils.variance_queue_wait_confidence_interval(estimated_variance_nq, n_rounds, 1)
 
-print 'IC Variancia nq:', inf_var_nq, sup_var_nq
-print 'precisao variancia nq:', precision_var_nq
+estimated_variance_w_acumulator = 0
+for x in statistics:
+	estimated_variance_w_acumulator += (x.mean_queue_wait - estimated_mean_real)**2
+
+estimated_variance_w = estimated_variance_w_acumulator / (n_rounds - 1) 
+print 'Variancia W:',estimated_variance_w
+
+inf_w, sup_w, precision_w = Utils.mean_queue_wait_confidence_interval(sqrt(estimated_variance_w), estimated_mean_real, n_rounds)
+print 'IC da media de W: ',inf_w, sup_w, precision_w
+
+inf_var_w, sup_var_w, precision_var_w = Utils.variance_queue_wait_confidence_interval(estimated_variance_w, n_rounds, 1)
+print 'IC da variancia de W: ',inf_var_w, sup_var_w, precision_var_w
+
 
 '''
 for x in statistics:
